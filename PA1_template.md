@@ -4,16 +4,51 @@ output:
   html_document:
     keep_md: true
 ---
-```{r Initialisation, echo=TRUE}
+
+```r
 knitr::opts_chunk$set(warning = FALSE, echo = TRUE)
 
 library(readr)
 library(xtable)
 library(dplyr)
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.4.2
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(tidyr)
+```
+
+```
+## Warning: package 'tidyr' was built under R version 3.4.2
+```
+
+```r
 library(ggplot2)
 library(knitr)
+```
 
+```
+## Warning: package 'knitr' was built under R version 3.4.3
 ```
 ## Introduction
 
@@ -94,7 +129,8 @@ assignment so you do not have to download the data separately.
 
 In this section we look at the data and perform some exploratory analysis.
 
-```{r loadingData}
+
+```r
 # Unzip file
 unzip("activity.zip", overwrite = TRUE)
 # load file
@@ -102,22 +138,73 @@ unzip("activity.zip", overwrite = TRUE)
 activity <- read_csv("activity.csv")
 ```
 
+```
+## Parsed with column specification:
+## cols(
+##   steps = col_integer(),
+##   date = col_date(format = ""),
+##   interval = col_integer()
+## )
+```
+
 Some stats about the file:
 
-```{r, results="asis"}
+
+```r
 #
 knitr::kable(summary(activity))
+```
+
+         steps             date               interval    
+---  ---------------  -------------------  ---------------
+     Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0 
+     1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8 
+     Median :  0.00   Median :2012-10-31   Median :1177.5 
+     Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5 
+     3rd Qu.: 12.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2 
+     Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0 
+     NA's   :2304     NA                   NA             
+
+```r
 #
 ```
 Display the first and last ten records:
 
-```{r  results='asis'}
 
+```r
 knitr::kable(head(activity), caption = "First ten records")
+```
+
+
+
+Table: First ten records
+
+ steps  date          interval
+------  -----------  ---------
+    NA  2012-10-01           0
+    NA  2012-10-01           5
+    NA  2012-10-01          10
+    NA  2012-10-01          15
+    NA  2012-10-01          20
+    NA  2012-10-01          25
+
+```r
 #
 knitr::kable(tail(activity), caption = "Last ten Records")
-
 ```
+
+
+
+Table: Last ten Records
+
+ steps  date          interval
+------  -----------  ---------
+    NA  2012-11-30        2330
+    NA  2012-11-30        2335
+    NA  2012-11-30        2340
+    NA  2012-11-30        2345
+    NA  2012-11-30        2350
+    NA  2012-11-30        2355
 
 
 ### What is mean total number of steps taken per day?
@@ -129,8 +216,8 @@ the dataset.
 
 The following code displays the total number of steps, discarding null or NA values:
 
-```{r calculation1}
 
+```r
 result <- activity %>%
   group_by(date) %>%
   summarise(TotalSteps = sum(steps)) %>%
@@ -140,19 +227,26 @@ ggplot(data = result) + geom_histogram( aes(x = date, y = TotalSteps), stat = "i
   ggtitle("Total Steps per Day")
 ```
 
+![](PA1_template_files/figure-html/calculation1-1.png)<!-- -->
+
 #### 2. Calculate and report the **mean** and **median** total number of steps taken per day
 
 A concise view of mean and median is shown below:
-```{r }
 
+```r
 print(summary(result$TotalSteps), type = "html")
 ```
 
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##      41    8841   10765   10766   13294   21194       8
+```
 
-The Mean Total Number of Steps per Day is = **`r round(mean(result$TotalSteps, na.rm = TRUE))`**
+
+The Mean Total Number of Steps per Day is = **1.0766\times 10^{4}**
 
 
-The Median Total Number of Steps per Day is = **`r round(median(result$TotalSteps, na.rm = TRUE))`**
+The Median Total Number of Steps per Day is = **1.0765\times 10^{4}**
 
 
 There is not much difference between the values as it is shown in the diagram below, where a red line was used to represent the average and the yellow to represent the median.
@@ -161,16 +255,16 @@ There is not much difference between the values as it is shown in the diagram be
 
 The following plot shows the total daily steps across time, the average and the smoothed conditional mean:
 
-```{r plotting}
 
+```r
 ggplot(data=result, aes(x=date, y = TotalSteps)) + 
   geom_hline(yintercept=mean(result$TotalSteps, na.rm= TRUE), color = "red", lwd = 0.5) +
   geom_hline(yintercept=median(result$TotalSteps, na.rm= TRUE), color = "yellow", lwd = 0.5) +
   geom_line(lwd = 1, color = "dark green") +
   ggtitle("Mean of Daily Total Steps + Mean + Median + Smoothed Mean") + geom_smooth(method="loess") 
-  
-
 ```
+
+![](PA1_template_files/figure-html/plotting-1.png)<!-- -->
 
 
 
@@ -182,7 +276,8 @@ For the purpose of this question the daily pattern is the number of steps in the
 
 The following plot shows the activity per interval in a day, across all days:
 
-```{r AverageDailyActivity, echo = TRUE}
+
+```r
 result <- activity %>%
   group_by(interval) %>%
   summarise(MeanTotalSteps = mean(steps, na.rm = TRUE)) %>%
@@ -193,12 +288,14 @@ ggplot(data = result, aes(x = interval, y = MeanTotalSteps)) + geom_line(color =
   geom_smooth(method = "lm") 
 ```
 
+![](PA1_template_files/figure-html/AverageDailyActivity-1.png)<!-- -->
+
 #### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 The following diagram displays the maximum number of steps:
 
-```{r}
 
+```r
 result <- activity %>%
   group_by(interval) %>%
   summarise(MeanTotalSteps = mean(steps, na.rm = TRUE)) %>%
@@ -215,8 +312,9 @@ ggplot(data = result, aes(x = interval, y = MeanTotalSteps)) + geom_line(color =
                               label = paste0(interval,"-",round(MeanTotalSteps))),
             position = position_dodge(width= 1.5)) +
   geom_smooth(method = "lm") 
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
 ### Imputing missing values
@@ -227,12 +325,27 @@ bias into some calculations or summaries of the data.
 
 #### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s)
 
-```{r}
+
+```r
 result <- summary(activity)
 knitr::kable(summary(activity), caption = "Overview")
 ```
 
-The number of NA is as follows:  **`r result[7]`** and it affects only the **steps** vartiable.
+
+
+Table: Overview
+
+         steps             date               interval    
+---  ---------------  -------------------  ---------------
+     Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0 
+     1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8 
+     Median :  0.00   Median :2012-10-31   Median :1177.5 
+     Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5 
+     3rd Qu.: 12.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2 
+     Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0 
+     NA's   :2304     NA                   NA             
+
+The number of NA is as follows:  **NA's   :2304  ** and it affects only the **steps** vartiable.
 
 #### 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
@@ -240,8 +353,8 @@ As a strategy for deling with NA values, it was noted that only the variable **s
 
 The approach is to replace the missing values with the interval total  and with the overall mean total if none is available (*overallMeanDayTotal*).
 
-```{r averages}
 
+```r
 activity2 <- activity %>%
   group_by(interval) %>%
   summarise(intervalSum_mean = mean(steps, na.rm = TRUE)) %>%
@@ -252,12 +365,21 @@ activity2 <- activity %>%
   arrange(date, interval)
 
 print(summary(activity2))
+```
 
+```
+##      steps             date               interval     
+##  Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
+##  Median :  0.00   Median :2012-10-31   Median :1177.5  
+##  Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
+##  3rd Qu.: 27.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
+##  Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0
 ```
 
 After this no NA's are now present.
 
-`r print(summary(activity2$steps))`
+
 
 #### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
@@ -273,7 +395,8 @@ A pure colour, represents no overlaps, whilst green represent an overlap.
 
 A red line represents the mean for the second dataset, a blue line represents the mean for the first dataset.
 
-```{r}
+
+```r
 result <- activity %>%
   group_by(date) %>%
   summarise(TotalSteps = sum(steps)) %>%
@@ -289,19 +412,31 @@ ggplot(data = result) + geom_histogram( aes(x = date, y = TotalSteps), stat = "i
   geom_histogram(data = result2, aes(x = date, y = TotalSteps), stat = "identity", fill="yellow", alpha= 0.7) +
   geom_hline(yintercept = mean(result$TotalSteps, na.rm=TRUE), color = "blue") +
 geom_hline(yintercept = mean(result2$TotalSteps, na.rm=TRUE), color = "red")
-
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 There are no partial overlaps as the colours in the diagram are either yellow (no overlap, belonging to the second dataset) or green (full overlap).
 
 Because of the chosen strategy no real differences were found in mean and median for the two datasets:
 
-```{r}
-print(summary(result$TotalSteps))
 
+```r
 print(summary(result$TotalSteps))
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##      41    8841   10765   10766   13294   21194       8
+```
+
+```r
+print(summary(result$TotalSteps))
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##      41    8841   10765   10766   13294   21194       8
 ```
 
 
@@ -320,7 +455,8 @@ The definition of daily activity pattern will be the same one calculated earlier
 
 Below a plot comparing the daily activity patterns of weekdays and weekends.
 
-```{r weekdays, echo=TRUE}
+
+```r
 result <- activity %>%
   mutate(weekday = weekdays(date)) %>%
   mutate(dayType = ifelse(weekday == "Saturday" | weekday == "Sunday", "Weekend", "Weekday")) %>%
@@ -343,5 +479,7 @@ ggplot(data =result, aes(x=interval, y = MeanTotalSteps, color = dayType))  +
                               label = paste0(interval,"-",round(MeanTotalSteps))),
             position = position_dodge(width= 1.5))
 ```
+
+![](PA1_template_files/figure-html/weekdays-1.png)<!-- -->
 
 From the plot it is possible to spot differences between Weekdays, where the activity pattern is higher in the first part of the measuring and lower for the remaining of the day, with the exception of around interval 1750.
